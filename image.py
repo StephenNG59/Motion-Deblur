@@ -4,6 +4,7 @@ import cv2 as cv
 
 def load_image(file_path):
     im = cv.imread(file_path, cv.IMREAD_UNCHANGED)
+    # im = im / 255.0
     return im
 
 
@@ -21,6 +22,7 @@ def initial_kernel(size):
 def get_partial(image):
     # psi = cv.spatialGradient(latent_image, ksize=3, borderType=cv.BORDER_DEFAULT)
     # d_depth = cv.CV_16S
+    # TODO use self-defined kernel, and make it possible to store negative value
     par_x = cv.Sobel(image, -1, dx=1, dy=0, ksize=3, borderType=cv.BORDER_DEFAULT)
     par_y = cv.Sobel(image, -1, dx=0, dy=1, ksize=3, borderType=cv.BORDER_DEFAULT)
     par_x = cv.convertScaleAbs(par_x)
