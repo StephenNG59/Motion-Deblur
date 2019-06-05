@@ -1,14 +1,14 @@
 import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
-from get_smooth_region import get_smooth_region
+from image import get_smooth_mask
 
 
 file_path = "./img/test.png"
 window_name = "ASC"
 
 im = cv.imread(file_path, cv.IMREAD_UNCHANGED)        # cv.IMREAD_COLOR
-mask = get_smooth_region(im, (11, 11), threshold=5)
+mask = get_smooth_mask(im, (11, 11), threshold=5)
 # cv.imshow("mask", mask)
 # cv.waitKey(0)
 # print(mask.shape)

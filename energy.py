@@ -16,3 +16,7 @@ def big_phi(x):
         return -k * abs(x)
     else:
         return -(a * x * x + b)
+
+
+def get_cof():
+    return k, a, b, l_t
