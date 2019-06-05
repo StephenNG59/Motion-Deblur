@@ -10,9 +10,9 @@ def update_psi(Psi, Mask, Observed_image, Latent_image, gamma=1, lambda1=0.002, 
     :param Mask: mask of smooth region
     :param Observed_image:
     :param Latent_image:
+    :param gamma: weight of substitution variable, should iteratively increases until sufficiently large
     :param lambda1: adjustable
     :param lambda2: adjustable
-    :param gamma: weight of substitution variable, should iteratively increases until sufficiently large
     :return:
         updated psi
     """
@@ -24,7 +24,7 @@ def update_psi(Psi, Mask, Observed_image, Latent_image, gamma=1, lambda1=0.002, 
 
     # lambda1 * |psi| + lambda2 * mask * (psi - d(observed))^2 + gamma * (psi - d(latent))^2
     for i in range(height):
-        if i % (height // 10) == 0:
+        if height // i % 10 == 0:
             print("Updating psi - progress {}%".format(10 * (i // (height / 10))))
         for j in range(width):
             for k in range(n_channel):
