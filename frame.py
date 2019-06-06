@@ -20,54 +20,61 @@ if __name__ == '__main__':
 
     observed_image = load_image(file_path)
 
-    # takes too long (~4min for 1900 * 1000 rgb images)
-    t1 = time.time()
-    smooth_mask = get_smooth_mask(observed_image, window_size, smooth_threshold)
-    print('Get smooth mask time:', time.time() - t1)
-    np.save(mask_np, smooth_mask)
-    # smooth_mask = np.load(mask_np)
+    # get smooth region mask
+    # t1 = time.time()
+    # smooth_mask = get_smooth_mask(observed_image, window_size, smooth_threshold)
+    # print('Get smooth mask time:', time.time() - t1)
+    # np.save(mask_np, smooth_mask)
+    # cv.imwrite(mask_path, smooth_mask)
+    smooth_mask = np.load(mask_np)
     mask_01 = smooth_mask / 255.0
-    cv.imwrite(mask_path, smooth_mask)
-    # smooth_mask = cv.imread(mask_path)
-    # print("smooth_mask:", smooth_mask.shape)
     # smooth_img = cv.bitwise_and(observed_image, observed_image, mask=smooth_mask)     # not suitable for float type
     # smooth_img = observed_image * smooth_mask / 255.0
     # plt.subplot(131); plt.imshow(smooth_img)
 
     kernel = initial_kernel(kernel_size)
 
-    latent_image = observed_image * 0.9
+    latent_image = observed_image
 
+    # initial psi
     t1 = time.time()
     psi = get_partial(latent_image)
     print('Get partial time:', time.time() - t1)
-    plt.subplot(132); plt.imshow(psi[0])
-    plt.subplot(133); plt.imshow(psi[1])
+    # region plot partial of image
+    plt.subplot(132); plt.imshow(psi[0] / 510.0 + 0.5)
+    plt.subplot(133); plt.imshow(psi[1] / 510.0 + 0.5)
     plt.show()
+    # endregion
 
+    # update psi
     t1 = time.time()
     psi_updated = update_psi(psi, mask_01, observed_image, latent_image)
     np.save(psi_updated_path, psi_updated)
     # psi_updated = np.load(psi_updated_path)
     print('Update psi time:', time.time() - t1)
-    plt.subplot(321); plt.imshow(psi[0])
-    plt.subplot(322); plt.imshow(psi[1])
-    plt.subplot(323); plt.imshow(psi_updated[0])
-    plt.subplot(324); plt.imshow(psi_updated[1])
-    plt.subplot(325); plt.imshow(psi_updated[0] - psi[0])
-    plt.subplot(326); plt.imshow(psi_updated[1] - psi[1])
-    plt.show()
-    print(psi_updated[0] - psi[0])
-
+    # region plot psi updating result
+    # plt.subplot(321); plt.imshow(psi[0])
+    # plt.subplot(322); plt.imshow(psi[1])
+    # plt.subplot(323); plt.imshow(psi_updated[0])
+    # plt.subplot(324); plt.imshow(psi_updated[1])
+    # plt.subplot(325); plt.imshow(psi_updated[0] - psi[0])
+    # plt.subplot(326); plt.imshow(psi_updated[1] - psi[1])
+    # plt.show()
     # print(psi_updated[0] - psi[0])
+    # endregion
+    # psi_diff =
 
-    # gray_img = cv.cvtColor(latent_image, code=cv.COLOR_RGB2GRAY)
-    # f = np.fft.fft2(gray_img)
+    # update latent image
+
+    gray_img = cv.cvtColor(latent_image, code=cv.COLOR_RGB2GRAY)
+    f = np.fft.fft2(gray_img)
+    dx = np.array([[0., 0., 0.], [-1., 1., 0.], [0., 0., 0.]], dtype=np.float32)
+    print(np.fft.fft2(dx))
     # f_shift = np.fft.fftshift(f)
     # magnitude_spectrum = 20 * np.log(np.abs(f_shift))
-
     # plt.subplot(211); plt.imshow(magnitude_spectrum, cmap='gray')
     # plt.show()
+
 
 
     # # optimize L and f

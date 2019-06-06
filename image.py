@@ -4,29 +4,33 @@ import cv2 as cv
 
 def load_image(file_path):
     im = cv.imread(file_path, cv.IMREAD_UNCHANGED)
-    # im = im / 255.0
     return im
 
 
 def initial_kernel(size):
-
-    # currently only supports square
-    assert size[0] == size[1], "error: kernel size is not square"
-
+    assert size[0] == size[1], "error: currently only square kernels are supported"
     kernel = np.identity(size[0])
-    # kernel = np.eye(size[0])
-
     return kernel
 
 
 def get_partial(image):
-    # psi = cv.spatialGradient(latent_image, ksize=3, borderType=cv.BORDER_DEFAULT)
-    # d_depth = cv.CV_16S
-    # TODO use self-defined kernel, and make it possible to store negative value
-    par_x = cv.Sobel(image, -1, dx=1, dy=0, ksize=3, borderType=cv.BORDER_DEFAULT)
-    par_y = cv.Sobel(image, -1, dx=0, dy=1, ksize=3, borderType=cv.BORDER_DEFAULT)
-    par_x = cv.convertScaleAbs(par_x)
-    par_y = cv.convertScaleAbs(par_y)
+    """
+    Computer the partial derivative in x and y direction.
+    :param image: ndarray of shape [height, width], an image of uint8 type
+    :return:
+        par_x, par_y: ndarray of shape [height, width], partial in x, partial in y, in range (-255.0, 255.0)
+    """
+    im = image * 1.0                                # transform to float type, otherwise cannot use filter2D
+    dx = np.array([[-1., 1.]], dtype=np.float32)    # should use float32 dtype, otherwise cannot use filter2D
+    dy = np.array([[-1.], [1.]], dtype=np.float32)
+    par_x = cv.filter2D(im, -1, dx)
+    par_y = cv.filter2D(im, -1, dy)
+    # region (not suitable code)
+    # par_x = cv.Sobel(image, -1, dx=1, dy=0, ksize=3, borderType=cv.BORDER_DEFAULT)
+    # par_y = cv.Sobel(image, -1, dx=0, dy=1, ksize=3, borderType=cv.BORDER_DEFAULT)
+    # par_x = cv.convertScaleAbs(par_x)
+    # par_y = cv.convertScaleAbs(par_y)
+    # endregion
     return par_x, par_y
 
 
@@ -37,9 +41,8 @@ def get_smooth_mask(src, window_size, threshold):
     :param window_size: tuple object - [height of window, width of window]
     :param threshold: threshold of standard deviation
     :return:
-        smooth_region: a mask of the smooth region, same shape as src
+        smooth_mask: a mask of the smooth region, same shape as src
     """
-
     img_h, img_w, img_c = src.shape
     win_h, win_w = window_size
     assert win_w % 2 == 1 & win_h % 2 == 1, "window size must be odd number"
@@ -47,8 +50,6 @@ def get_smooth_mask(src, window_size, threshold):
 
     # padding
     src_pad = cv.copyMakeBorder(src, win_half_h, win_half_h, win_half_w, win_half_w, cv.BORDER_REFLECT_101)
-
-    # np.std()
 
     sd = np.zeros(src.shape)        # [h, w, c]
     for i in range(img_h):
@@ -60,13 +61,17 @@ def get_smooth_mask(src, window_size, threshold):
                 sd[i][j][k] = np.std(window[:, :, k])
     sd = np.sum(sd, axis=2)         # add up standard deviation of all channels
 
-    # smooth_region = cv.inRange()
-
-    smooth_region = np.zeros((img_h, img_w, 1), np.uint8)
+    smooth_mask = np.zeros((img_h, img_w, 1), np.uint8)
     for i in range(img_h):
         for j in range(img_w):
             # print(sd[i][j])
             if sd[i][j] < threshold:
-                smooth_region[i][j] = 0xff
+                smooth_mask[i][j] = 0xff
 
-    return smooth_region
+    return smooth_mask
+
+
+def get_kernel(dx, dy):
+    assert dx == 0 or 1 and dy == 0 or 1, "dx, dy should be 0 or 1"
+    # todo 3*3和1*3的计算速度差距多大？是否需要多加一个用于卷积计算的1*3核
+    np.fft.ifft2()
