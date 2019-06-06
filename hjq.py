@@ -50,7 +50,7 @@ def find_local_prior(img, kernel_w, kernel_h):
     # print(table)
     kw = int((kernel_w - 1)/2)
     kh = int((kernel_h - 1)/2)
-    g = np.copy(img1)
+    g = np.zeros(img.shape)
     for i in range(rows):
         for j in range(cols):
             if find_sd(img, table, min(i+kw, rows-1), max(i-kw, 0), min(j+kh, cols-1), max(j-kh, 0)) < 0.02:
