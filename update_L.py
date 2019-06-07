@@ -17,7 +17,7 @@ def update_L(observed_image, kernel, psi):
     dyy = np.array([[0, 1, 0], [0, -2, 0], [0, 1, 0]], dtype=np.float32)
     dxy = np.array([[1, -1, 0], [-1, 1, 0], [0, 0, 0]], dtype=np.float32)
 
-
+    # np.
 
     # conjugate function
     np.conj()
