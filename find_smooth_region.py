@@ -24,13 +24,14 @@ def find_sd(img, table, x1, x2, y1, y2):
     return sd1
 
 
-def find_smooth_region(img, kernel_w, kernel_h):
+def find_smooth_region(img, kernel_w, kernel_h, threshold):
     """
     This function is to find the smooth region of a image, corresponding to the "Local prior p(L)" part in the paper.
     We build a table to store the sum of some boxes in the image, thus we can calculate the means fast.
     :param img:         the grayscale of the input image
     :param kernel_w:    kernel width
     :param kernel_h:    kernel height
+    :param threshold:   the threshold used for the image sd, we set it to 0.02 here
     :return:            a black-and-white image which stores the smooth region
     """
     # first build a table for dynamic programming
@@ -46,7 +47,7 @@ def find_smooth_region(img, kernel_w, kernel_h):
     g = np.zeros(img.shape)
     for i in range(rows):
         for j in range(cols):
-            if find_sd(img, table, min(i+kw, rows-1), max(i-kw, 0), min(j+kh, cols-1), max(j-kh, 0)) < 0.02:
+            if find_sd(img, table, min(i+kw, rows-1), max(i-kw, 0), min(j+kh, cols-1), max(j-kh, 0)) < threshold:
                 g[i][j] = 255
             else:
                 g[i][j] = 0
@@ -75,7 +76,7 @@ if __name__ == '__main__':
     cv.waitKey(0)
     cv.destroyAllWindows()
 
-    find_smooth_region(img1, kernel_w1, kernel_h1)
+    find_smooth_region(img1, kernel_w1, kernel_h1, 0.02)
 
     # print(img1)
 
