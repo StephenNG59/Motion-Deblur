@@ -1,21 +1,6 @@
 import numpy as np
 import cv2 as cv
-
 from matplotlib import pyplot as plt
-
-img1 = cv.imread('./img/man.png', 0)
-
-# kernel_w1 = int(input('请输入卷积核的宽度'))  # 宽度和高度必须都为奇数
-# kernel_h1 = int(input('请输入卷积核的高度'))
-kernel_w1 = 11
-kernel_h1 = 11
-
-print(img1.shape)
-# print(img1)
-
-cv.imshow('image', img1)
-cv.waitKey(0)
-cv.destroyAllWindows()
 
 
 def find_sd(img, table, x1, x2, y1, y2):
@@ -39,7 +24,15 @@ def find_sd(img, table, x1, x2, y1, y2):
     return sd1
 
 
-def find_local_prior(img, kernel_w, kernel_h):
+def find_smooth_region(img, kernel_w, kernel_h):
+    """
+    This function is to find the smooth region of a image, corresponding to the "Local prior p(L)" part in the paper.
+    We build a table to store the sum of some boxes in the image, thus we can calculate the means fast.
+    :param img:         the grayscale of the input image
+    :param kernel_w:    kernel width
+    :param kernel_h:    kernel height
+    :return:            a black-and-white image which stores the smooth region
+    """
     # first build a table for dynamic programming
     rows, cols = img.shape
     table = np.zeros((rows+1, cols+1))
@@ -61,10 +54,28 @@ def find_local_prior(img, kernel_w, kernel_h):
     cv.imshow('res', g)
     cv.waitKey(0)
     cv.destroyAllWindows()
-    return 0
+    return g
 
 
-find_local_prior(img1, kernel_w1, kernel_h1)
+if __name__ == '__main__':
+    """
+        for function testing
+    """
+    img1 = cv.imread('./img/man.png', 0)
 
-# print(img1)
+    # kernel_w1 = int(input('请输入卷积核的宽度'))  # 宽度和高度必须都为奇数
+    # kernel_h1 = int(input('请输入卷积核的高度'))
+    kernel_w1 = 11
+    kernel_h1 = 11
+
+    print(img1.shape)
+    # print(img1)
+
+    cv.imshow('image', img1)
+    cv.waitKey(0)
+    cv.destroyAllWindows()
+
+    find_smooth_region(img1, kernel_w1, kernel_h1)
+
+    # print(img1)
 

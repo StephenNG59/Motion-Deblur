@@ -42,31 +42,40 @@ def update_psi(Psi, Mask, Observed_image, Latent_image, gamma=1, lambda1=0.002, 
 def update_single_psi(psi, mask, d_observed, d_latent, gamma, lambda1, lambda2):
     k, a, b, lt = get_cof()
 
-    if psi < -lt or psi > lt:
-        psi_ = (lambda2 * mask * d_observed + gamma * d_latent) / (lambda1 * a + lambda2 * mask + gamma)
-        if psi_ < -lt or psi_ > lt:
-            psi_star = psi_
-        elif lt >= psi_ >= 0:
-            psi_star = lt
-        else:               # -lt <= psi_ < 0
-            psi_star = lt
+    psi1 = (lambda1 * k + 2 * lambda2 * mask * d_observed + 2 * gamma * d_latent) / (2 * (lambda2 * mask + gamma))
+    if -lt <= psi1 <= 0:
+        pass
+    elif psi1 > 0:
+        psi1 = 0
+    elif psi1 < -lt:
+        psi1 = -lt
+    e1 = (-k * lambda1 * psi1) + lambda2 * mask * (psi1 - d_observed)**2 + gamma * (psi1 - d_latent)**2
 
-    elif -lt <= psi < 0:
-        psi_ = (lambda1 * k + 2 * lambda2 * mask * d_observed + 2 * gamma * d_latent) / (2 * (lambda2 * mask + gamma))
-        if -lt <= psi_ < 0:
-            psi_star = psi_
-        elif psi_ >= 0:
-            psi_star = 0
-        else:               # psi_ < -lt
-            psi_star = -lt
+    psi2 = (-lambda1 * k + 2 * lambda2 * mask * d_observed + 2 * gamma * d_latent) / (2 * (lambda2 * mask + gamma))
+    if 0 <= psi2 <= lt:
+        pass
+    elif psi2 < 0:
+        psi2 = 0
+    elif psi2 > lt:
+        psi2 = lt
+    e2 = (k * lambda1 * psi2) + lambda2 * mask * (psi2 - d_observed) ** 2 + gamma * (psi2 - d_latent) ** 2
 
-    else:                   # 0 <= psi <= lt
-        psi_ = (-lambda1 * k + 2 * lambda2 * mask * d_observed + 2 * gamma * d_latent) / (2 * (lambda2 * mask + gamma))
-        if 0 <= psi_ <= lt:
-            psi_star = psi_
-        elif psi_ < 0:
-            psi_star = 0
-        else:               # psi_ > lt
-            psi_star = lt
+    psi3 = (lambda2 * mask * d_observed + gamma * d_latent) / (lambda1 * a + lambda2 * mask + gamma)
+    if -lt < psi3 < lt:
+        psi3 = lt
+    e3 = lambda1 * (a*psi3*psi3 + b) + lambda2 * mask * (psi3 - d_observed) ** 2 + gamma * (psi3 - d_latent) ** 2
+
+    e4 = (k * lambda1 * lt) + lambda2 * mask * (-lt - d_observed)**2 + gamma * (-lt - d_latent)**2
+
+    e_min = min(e1, e2, e3, e4)
+
+    if e_min == e1:
+        psi_star = psi1
+    elif e_min == e2:
+        psi_star = psi2
+    elif e_min == e3:
+        psi_star = psi3
+    elif e_min == e4:
+        psi_star = -lt
 
     return psi_star
