@@ -69,7 +69,7 @@ if __name__ == '__main__':
     gray_img = cv.cvtColor(latent_image, code=cv.COLOR_RGB2GRAY)
     f = np.fft.fft2(gray_img)
     dx = np.array([[0., 0., 0.], [-1., 1., 0.], [0., 0., 0.]], dtype=np.float32)
-    print(np.fft.fft2(dx))
+    # print(np.fft.fft2(dx))
     # f_shift = np.fft.fftshift(f)
     # magnitude_spectrum = 20 * np.log(np.abs(f_shift))
     # plt.subplot(211); plt.imshow(magnitude_spectrum, cmap='gray')
