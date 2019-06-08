@@ -4,40 +4,45 @@ import matplotlib.pyplot as plt
 
 
 a = cv.imread("./img/man-m.png")
+# a, _, _ = cv.split(a)
+a = cv.cvtColor(a, cv.COLOR_RGB2GRAY)
 a = cv.copyMakeBorder(a, 1, 1, 1, 1, cv.BORDER_REPLICATE)
 a = a / 255.0
 
-b = np.array([[0, 0, 0], [-1, 1, 0], [0, 0, 0]], dtype=np.float32)
+b = np.array([[1, -1, 0], [-1, 1, 0], [0, 0, 0]], dtype=np.float32)
 # b = np.array([[-1, -1, -1], [-1, 1, -1], [-1, -1, -1]], dtype=np.float32)
-# a_full = cv.copyMakeBorder(a, top=0, bottom=b.shape[0], left=0, right=b.shape[1],
-#                            borderType=cv.BORDER_CONSTANT, value=0)
-b_full = cv.copyMakeBorder(b, top=(a.shape[0] - b.shape[0]) // 2, bottom=(a.shape[0] - b.shape[0] + 1) // 2,
-                           left=(a.shape[1] - b.shape[1]) // 2, right=(a.shape[1] - b.shape[1] + 1) // 2,
+a_full = cv.copyMakeBorder(a, top=(b.shape[0]) // 2, bottom=(b.shape[0] + 1) // 2,
+                           left=(b.shape[1]) // 2, right=(b.shape[1] + 1) // 2,
+                           borderType=cv.BORDER_CONSTANT, value=0)
+b_full = cv.copyMakeBorder(b, top=(a_full.shape[0] - b.shape[0]) // 2, bottom=(a_full.shape[0] - b.shape[0] + 1) // 2,
+                           left=(a_full.shape[1] - b.shape[1]) // 2, right=(a_full.shape[1] - b.shape[1] + 1) // 2,
                            borderType=cv.BORDER_CONSTANT, value=0)
 # b_full = cv.copyMakeBorder(b, top=0, bottom=a.shape[0], left=0, right=a.shape[1],
 #                            borderType=cv.BORDER_CONSTANT, value=0)
-b_full = np.dstack([b_full, b_full, b_full])
-ab = cv.filter2D(a, -1, b_full)         # b_full or b, the same
-ab = ab / 2.0 + 0.5
+# b_full = np.dstack([b_full, b_full, b_full])
+ab = cv.filter2D(a_full, -1, b)         # b_full or b, the same
+print("min:", np.min(ab), "max:", np.max(ab))
+# ab = ab / 2.0 + 0.5
 
-plt.subplot(131); plt.imshow(ab); plt.title("Der through convolution")
+plt.subplot(121); plt.imshow(ab, cmap='gray'); plt.title("Convolution in time")
+print("1 shape", ab.shape)
 
 ab_f = np.fft.fft2(ab)
 ab_f = np.fft.ifft2(ab_f)
 ab_f = np.abs(ab_f)
-plt.subplot(132); plt.imshow(ab_f); plt.title("Der after fft&ifft")
+# plt.subplot(132); plt.imshow(ab_f, cmap='gray'); plt.title("Der after fft&ifft")
 
-af = np.fft.fft2(a)
+af = np.fft.fft2(a_full)
 print(af.shape)
-bf = np.fft.fft2(b)
-bf_full = np.zeros(a.shape)
-bf_full[((a.shape[0] - b.shape[0]) // 2): (a.shape[0] - (a.shape[0] - b.shape[0]) // 2),
-        ((a.shape[1] - b.shape[1]) // 2): (a.shape[1] - (a.shape[1] - b.shape[1]) // 2), :] = np.real(bf)
+bf = np.fft.fft2(b_full)
+# bf_full = np.zeros(a.shape)
+# bf_full[((a.shape[0] - b.shape[0]) // 2): (a.shape[0] - (a.shape[0] - b.shape[0]) // 2),
+#         ((a.shape[1] - b.shape[1]) // 2): (a.shape[1] - (a.shape[1] - b.shape[1]) // 2), :] = np.real(bf)
 # bf = cv.copyMakeBorder(bf, top=(a.shape[0] - b.shape[0]) // 2, bottom=(a.shape[0] - b.shape[0] + 1) // 2,
 #                        left=(a.shape[1] - b.shape[1]) // 2, right=(a.shape[1] - b.shape[1] + 1) // 2,
 #                        borderType=cv.BORDER_CONSTANT, value=0)
 # print(bf.shape)
-f_ab = af * bf_full
+f_ab = af * bf
 # f_ab = cv.mulSpectrums(af, bf, flags=cv.DFT_COMPLEX_OUTPUT)
 print(f_ab.shape)
 # f_ab_cut = f_ab[:a.shape[0] - b.shape[0] + 1, :a.shape[1] - b.shape[1] + 1, :]
@@ -46,14 +51,19 @@ print(f_ab.shape)
 # f_ab_cut = f_ab_cut / 2.0 + 0.5
 
 f_ab = np.fft.ifft2(f_ab)
+f_ab = np.fft.fftshift(f_ab)
 f_ab = np.real(f_ab)
+f_ab = -f_ab
 # f_ab = np.abs(f_ab)
-mx, mn = np.max(f_ab), np.min(f_ab)
-if mn < 0:
-    f_ab = f_ab - mn
-f_ab = f_ab / (mx - mn)
 print("min:", np.min(f_ab), "max:", np.max(f_ab))
-plt.subplot(133); plt.imshow(f_ab); plt.title("-_-")
+plt.subplot(122); plt.imshow(f_ab, cmap='gray'); plt.title("Multiplication in frequency")
+print("2 shape", f_ab.shape)
+mx, mn = np.max(f_ab), np.min(f_ab)
+# if mn < 0:
+#     f_ab = f_ab - mn
+# f_ab = f_ab / (mx - mn)
+# plt.subplot(133); plt.imshow(f_ab, cmap='gray'); plt.title("-_-")
+print("min:", np.min(f_ab), "max:", np.max(f_ab))
 
 
 #

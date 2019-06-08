@@ -66,9 +66,10 @@ if __name__ == '__main__':
 
     # update latent image
 
-    gray_img = cv.cvtColor(latent_image, code=cv.COLOR_RGB2GRAY)
+    l_pad = cv.copyMakeBorder(latent_image, 1, 1, 1, 1, cv.BORDER_REPLICATE)
+    gray_img = cv.cvtColor(l_pad, code=cv.COLOR_RGB2GRAY)
     f = np.fft.fft2(gray_img)
-    dx = np.array([[0., 0., 0.], [-1., 1., 0.], [0., 0., 0.]], dtype=np.float32)
+    dx = np.array([[0., 0., 0.], [-1., 1., -1.], [0., 0., 0.]], dtype=np.float32)
     # print(np.fft.fft2(dx))
     # f_shift = np.fft.fftshift(f)
     # magnitude_spectrum = 20 * np.log(np.abs(f_shift))
