@@ -9,7 +9,8 @@ def load_image(file_path):
 
 def initial_kernel(size):
     assert size[0] == size[1], "error: currently only square kernels are supported"
-    kernel = np.identity(size[0])
+    kernel = np.array([[0, 0.2, 0], [0.2, 0.2, 0.2], [0, 0.2, 0]])
+    # kernel = np.identity(size[0])
     return kernel
 
 
@@ -23,7 +24,7 @@ def get_partial(image):
     im = image * 1.0                                # transform to float type, otherwise cannot use filter2D
     dx = np.array([[-1., 1.]], dtype=np.float32)    # should use float32 dtype, otherwise cannot use filter2D
     dy = np.array([[-1.], [1.]], dtype=np.float32)
-    par_x = cv.filter2D(im, -1, dx)
+    par_x = cv.filter2D(im, -1, dx)                 # here border type is reflect (101?)
     par_y = cv.filter2D(im, -1, dy)
     # region (not suitable code)
     # par_x = cv.Sobel(image, -1, dx=1, dy=0, ksize=3, borderType=cv.BORDER_DEFAULT)
@@ -53,6 +54,8 @@ def get_smooth_mask(src, window_size, threshold):
 
     sd = np.zeros(src.shape)        # [h, w, c]
     for i in range(img_h):
+        if i == img_h // 2:
+            print("  process: 50%...")
         y = i + win_half_h
         for j in range(img_w):
             x = j + win_half_w
@@ -69,9 +72,3 @@ def get_smooth_mask(src, window_size, threshold):
                 smooth_mask[i][j] = 0xff
 
     return smooth_mask
-
-
-def get_kernel(dx, dy):
-    assert dx == 0 or 1 and dy == 0 or 1, "dx, dy should be 0 or 1"
-    # todo 3*3和1*3的计算速度差距多大？是否需要多加一个用于卷积计算的1*3核
-    np.fft.ifft2()
