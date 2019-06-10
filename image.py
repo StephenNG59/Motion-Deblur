@@ -9,7 +9,8 @@ def load_image(file_path):
 
 def initial_kernel(size):
     assert size[0] == size[1], "error: currently only square kernels are supported"
-    kernel = np.array([[0, 0.2, 0], [0.2, 0.2, 0.2], [0, 0.2, 0]])
+    # kernel = np.array([[0, 0.2, 0], [0.2, 0.2, 0.2], [0, 0.2, 0]])
+    kernel = np.array([[0, 0, 0], [0, 1, 0], [0, 0, 0]], np.float32)
     # kernel = np.identity(size[0])
     return kernel
 

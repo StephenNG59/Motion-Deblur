@@ -48,6 +48,6 @@ if __name__ == '__main__':
         # if f_diff(updated_f, f) < f_threshold or iters >= iters_max:
             # flag1 = False
         # f = updated_f
-
+    cv.imwrite("./img/out.jpg", latent.latent)
 
 

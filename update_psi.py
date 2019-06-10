@@ -43,6 +43,7 @@ def update_psi(Psi, Mask, Observed_image, Latent_image, gamma=Gamma, lambda1=Lam
 def update_single_psi(psi, mask, d_observed, d_latent, gamma, lambda1, lambda2):
     k, a, b, lt = get_cof()
 
+    # [-lt, 0]
     psi1 = (lambda1 * k + 2 * lambda2 * mask * d_observed + 2 * gamma * d_latent) / (2 * (lambda2 * mask + gamma))
     if -lt <= psi1 <= 0:
         pass
@@ -52,6 +53,7 @@ def update_single_psi(psi, mask, d_observed, d_latent, gamma, lambda1, lambda2):
         psi1 = -lt
     e1 = (-k * lambda1 * psi1) + lambda2 * mask * (psi1 - d_observed)**2 + gamma * (psi1 - d_latent)**2
 
+    # [0, lt]
     psi2 = (-lambda1 * k + 2 * lambda2 * mask * d_observed + 2 * gamma * d_latent) / (2 * (lambda2 * mask + gamma))
     if 0 <= psi2 <= lt:
         pass
@@ -61,6 +63,7 @@ def update_single_psi(psi, mask, d_observed, d_latent, gamma, lambda1, lambda2):
         psi2 = lt
     e2 = (k * lambda1 * psi2) + lambda2 * mask * (psi2 - d_observed) ** 2 + gamma * (psi2 - d_latent) ** 2
 
+    # (-∞, -lt) ∪ (lt, +∞)
     psi3 = (lambda2 * mask * d_observed + gamma * d_latent) / (lambda1 * a + lambda2 * mask + gamma)
     if -lt < psi3 < lt:
         psi3 = lt
@@ -76,9 +79,10 @@ def update_single_psi(psi, mask, d_observed, d_latent, gamma, lambda1, lambda2):
         psi_star = psi2
     elif e_min == e3:
         psi_star = psi3
-    elif e_min == e4:
+    else:  # e_min == e4
         psi_star = -lt
 
+    # print("psi1:{1:.2f}, psi2:{2:.2f}, psi3:{3:.2f}, psi4:{4:.2f}, origin:{0:.3f}, updated:{5:.3f}".format(psi, psi1, psi2, psi3, -lt, psi_star))
     return psi_star
 
 
