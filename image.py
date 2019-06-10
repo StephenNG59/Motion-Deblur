@@ -76,3 +76,7 @@ def get_smooth_mask(src, window_size, threshold):
                 smooth_mask[i][j] = 0xff
 
     return smooth_mask
+
+
+def pad_at_top_left(img, pad_y, pad_x):
+    return cv.copyMakeBorder(img, 0, pad_y, 0, pad_x, cv.BORDER_CONSTANT, value=0)
