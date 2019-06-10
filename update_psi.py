@@ -1,9 +1,10 @@
-# import numpy as np
+import numpy as np
 from energy import get_cof
 from image import get_partial
+from vars import *
 
 
-def update_psi(Psi, Mask, Observed_image, Latent_image, gamma=1, lambda1=0.002, lambda2=10):
+def update_psi(Psi, Mask, Observed_image, Latent_image, gamma=Gamma, lambda1=Lambda1, lambda2=Lambda2):
     """
     Update Psi.
     :param Psi: the substitution variable which gradually approaches the derivative of latent image
@@ -79,3 +80,15 @@ def update_single_psi(psi, mask, d_observed, d_latent, gamma, lambda1, lambda2):
         psi_star = -lt
 
     return psi_star
+
+
+def get_psi_diff(psi_updated, psi):
+    psi_diff_x = psi_updated[0] - psi[0]
+    psi_diff_y = psi_updated[0] - psi[0]
+
+    diff_r = max(np.linalg.norm(psi_diff_x[:, :, 0], ord=2), np.linalg.norm(psi_diff_y[:, :, 0], ord=2))
+    diff_g = max(np.linalg.norm(psi_diff_x[:, :, 1], ord=2), np.linalg.norm(psi_diff_y[:, :, 1], ord=2))
+    diff_b = max(np.linalg.norm(psi_diff_x[:, :, 2], ord=2), np.linalg.norm(psi_diff_y[:, :, 2], ord=2))
+
+    diff = max(diff_r, diff_g, diff_b)
+    return diff
