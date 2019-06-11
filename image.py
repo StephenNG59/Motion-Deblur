@@ -11,7 +11,8 @@ def initial_kernel(size):
     assert size[0] == size[1], "error: currently only square kernels are supported"
     # kernel = np.array([[0, 0.2, 0], [0.2, 0.2, 0.2], [0, 0.2, 0]])
     # kernel = np.array([[0, 0, 0], [0, 1, 0], [0, 0, 0]], np.float32)
-    x = 5; kernel = np.ones((x, x), np.float32); kernel[x//2][x//2] = 1.0
+    x = 11; kernel = np.ones((x, x), np.float32); kernel[x//2][x//2] = 1.0
+    kernel = np.arange(x * x).reshape((x, x))
     # kernel = np.ones((3, 3))
     kernel = kernel / np.sum(kernel)
     # kernel = np.identity(size[0])
@@ -28,8 +29,8 @@ def get_partial(image):
     im = image * 1.0                                # transform to float type, otherwise cannot use filter2D
     dx = np.array([[-1., 1.]], dtype=np.float32)    # should use float32 dtype, otherwise cannot use filter2D
     dy = np.array([[-1.], [1.]], dtype=np.float32)
-    par_x = cv.filter2D(im, -1, dx)                 # here border type is reflect (101?)
-    par_y = cv.filter2D(im, -1, dy)
+    par_x = cv.filter2D(im, -1, dx, borderType=cv.BORDER_REPLICATE)                 # here border type is reflect (101?)
+    par_y = cv.filter2D(im, -1, dy, borderType=cv.BORDER_REPLICATE)
     # region (not suitable code)
     # par_x = cv.Sobel(image, -1, dx=1, dy=0, ksize=3, borderType=cv.BORDER_DEFAULT)
     # par_y = cv.Sobel(image, -1, dx=0, dy=1, ksize=3, borderType=cv.BORDER_DEFAULT)
@@ -76,3 +77,13 @@ def get_smooth_mask(src, window_size, threshold):
                 smooth_mask[i][j] = 0xff
 
     return smooth_mask
+
+
+def pad(img, pad_y, pad_x, rot=0):
+    i = np.rot90(img, rot)
+    i = cv.copyMakeBorder(i, 0, pad_y, 0, pad_x, cv.BORDER_CONSTANT)
+    return i
+
+
+def fft(img):
+    return np.fft.fft2(img)
