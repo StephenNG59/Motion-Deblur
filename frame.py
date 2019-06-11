@@ -6,28 +6,28 @@ from update_psi import *
 from Latent import *
 import time
 from vars import *
+from find_smooth_region import *
 
 
-get_smooth = False
+get_smooth = True
 smooth_npy = "./img/smooth.npy"
 
 if __name__ == '__main__':
 
     observed_image = load_image(file_path)
+    kernel = initial_kernel()
 
     # get smooth region mask
     print("1. Getting smooth region...")
     t1 = time.time()
     if get_smooth:
-        smooth_mask = get_smooth_mask(observed_image, window_size, smooth_threshold)
+        smooth_mask = find_smooth_region(observed_image, kernel.shape, smooth_threshold)
         np.save(smooth_npy, smooth_mask)
     else:
         smooth_mask = np.load(smooth_npy)
     mask_01 = smooth_mask / 255.0
     print("- 1.finished time {0}".format(time.time() - t1))
     plt.subplot(111); plt.imshow(smooth_mask[:, :, 0], cmap='gray'); plt.show()
-
-    kernel = initial_kernel(kernel_size)
 
     latent = Latent(observed_image, kernel.shape)
     cv.imwrite("./img/test/#1.jpg", 255 * latent.latent)
@@ -53,6 +53,13 @@ if __name__ == '__main__':
                 flag2 = False
             psi = psi_updated
             cv.imwrite("./img/out/out-" + str(iter_2) + ".jpg", latent.latent * 255)
+            for tmp1 in latent.latent:
+                for tmp2 in tmp1:
+                    for para in tmp2:
+                        if para > 1:
+                            para = 1
+                        elif para < 0:
+                            para = 0
         flag1 = False    # for test
         # update f
         # updated_f = update_f()
