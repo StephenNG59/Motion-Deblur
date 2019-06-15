@@ -50,8 +50,11 @@ class Latent:
         observed_b, observed_g, observed_r = cv.split(self.img)
 
         l_updated_b = self.update_l_channel(observed_b, kernel, (psi[0][:, :, 2], psi[1][:, :, 2])) / 255.0
+        print(" Updating latent channel: blue")
         l_updated_g = self.update_l_channel(observed_g, kernel, (psi[0][:, :, 1], psi[1][:, :, 1])) / 255.0
+        print(" Updating latent channel: green")
         l_updated_r = self.update_l_channel(observed_r, kernel, (psi[0][:, :, 0], psi[1][:, :, 0])) / 255.0
+        print(" Updating latent channel: red")
 
         l_updated = np.dstack([l_updated_b, l_updated_g, l_updated_r])
 

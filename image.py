@@ -11,10 +11,10 @@ def initial_kernel():
     # assert size[0] == size[1], "error: currently only square kernels are supported"
     # kernel = np.array([[0, 0.2, 0], [0.2, 0.2, 0.2], [0, 0.2, 0]])
     # kernel = np.array([[0, 0, 0], [0, 1, 0], [0, 0, 0]], np.float32)
-    #x = 5; kernel = np.ones((x, x), np.float32); kernel[x//2][x//2] = 1.0
+    x = 15; kernel = np.ones((x, x), np.float32); kernel[x//2][x//2] = 1.0
     # kernel = np.arange(x * x).reshape((x, x))
     # kernel = np.ones((3, 3))
-    kernel = np.ones((5, 5), dtype=float)
+    # kernel = np.ones((5, 5), dtype=float)
     kernel = kernel / np.sum(kernel)
     # kernel = np.identity(size[0])
     return kernel

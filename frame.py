@@ -9,7 +9,7 @@ from vars import *
 from find_smooth_region import *
 
 
-get_smooth = True
+get_smooth = False
 smooth_npy = "./img/smooth.npy"
 
 if __name__ == '__main__':
@@ -20,6 +20,8 @@ if __name__ == '__main__':
     # get smooth region mask
     print("1. Getting smooth region...")
     t1 = time.time()
+
+    # smooth_mask = np.ndarray(observed_image.shape, np.uint8)
     if get_smooth:
         smooth_mask = find_smooth_region(observed_image, kernel.shape, smooth_threshold)
         np.save(smooth_npy, smooth_mask)

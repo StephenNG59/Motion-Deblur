@@ -37,6 +37,7 @@ def find_smooth_region(img, ker_shape, threshold):
     :param threshold:   the threshold used for the image sd, we set it to 0.02 here
     :return:            a black-and-white image which stores the smooth region
     """
+
     # first build a table for dynamic programming
     rows, cols, channels = img.shape
     table = np.zeros((rows+1, cols+1, channels))
@@ -51,6 +52,7 @@ def find_smooth_region(img, ker_shape, threshold):
     # kw = int((kernel_w - 1)/2)
     # kh = int((kernel_h - 1)/2)
     smooth_mask = np.zeros(img.shape)
+
     for i in range(rows):
         for j in range(cols):
             if find_sd(img, table, channels, min(i+kw, rows-1), max(i-kw, 0), min(j+kh, cols-1), max(j-kh, 0))\
