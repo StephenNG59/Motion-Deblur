@@ -1,9 +1,12 @@
 import numpy as np
 import cv2 as cv
+from image import initial_kernel
 
 
-file_path = "./img/test.jpg"
-out_path = "./img/test_blur.jpg"
+# file_path = "./img/test.jpg"
+file_path = "./img/pcs/picassoOut.jpg"
+# out_path = "./img/test_blur.jpg"
+out_path = "./img/pcs/picassoBlurImage_gen.png"
 
 # kernel = np.array([[0, 0, 1, 0, 0], [0, 1, 2, 1, 0], [1, 2, 4, 2, 1], [0, 1, 2, 1, 0], [0, 0, 1, 0, 0]], np.float32)
 
@@ -14,10 +17,11 @@ out_path = "./img/test_blur.jpg"
 # # for i in range(k_w//2-10, k_w//2+11):
 # #     kernel[k_h//2][i] = 0.05
 # # kernel[k_h//2][k_w//2] = 0.1
-x = 11; kernel = np.ones((x, x), np.float32); kernel[x//2][x//2] = 1.0
-kernel = np.arange(x * x).reshape((x, x))
-pad = kernel.shape[0] // 2
-kernel = kernel / np.sum(kernel)
+# x = 11; kernel = np.ones((x, x), np.float32); kernel[x//2][x//2] = 1.0
+# kernel = np.arange(x * x).reshape((x, x))
+# pad = kernel.shape[0] // 2
+# kernel = kernel / np.sum(kernel)
+kernel = initial_kernel((0, 0))
 
 
 img = cv.imread(file_path)

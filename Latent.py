@@ -76,8 +76,8 @@ class Latent:
         :param psi:
         :return:
         """
-        if kernel.shape != (self.ker_x, self.ker_y):
-            self.ker_x, self.ker_y = kernel.shape
+        if kernel.shape != (self.ker_y, self.ker_x):
+            self.ker_y, self.ker_x = kernel.shape
             self.pad_x, self.pad_y = self.img_x + self.ker_x - 1, self.img_y + self.ker_y - 1
 
         img = observed_image_channel
@@ -94,6 +94,7 @@ class Latent:
         f_img_pad = fft(pad(img, self.ker_y - 1, self.ker_x - 1))
 
         # plt.subplot(121); plt.imshow(img, cmap='gray');
+        print(self.f_dx_pad.shape, f_psi_x_pad.shape, self.f_dy_pad.shape, f_psi_y_pad.shape)
         l_channel_updated = np.fft.ifft2(
             (np.conjugate(f_kernel_pad) * f_img_pad * self.Delta
              + Gamma * np.conjugate(self.f_dx_pad) * f_psi_x_pad

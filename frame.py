@@ -13,6 +13,7 @@ smooth_npy = "./img/smooth.npy"
 
 if __name__ == '__main__':
 
+    print("0. Reading file:{0}".format(file_path))
     observed_image = load_image(file_path)
 
     # get smooth region mask

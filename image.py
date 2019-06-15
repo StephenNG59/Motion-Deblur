@@ -17,7 +17,9 @@ def initial_kernel(size):
     # kernel = kernel / np.sum(kernel)
     # kernel = np.identity(size[0])
     kernel = cv.imread("./img/pcs/picassoBlurImage_kernel.png")
-    kernel = kernel[:, :, 0]
+    kernel = kernel[:, :, 0] * 1.0
+    kernel = kernel / np.sum(kernel)
+    print("kernel:", kernel)
     return kernel
 
 
@@ -61,8 +63,10 @@ def get_smooth_mask(src, window_size, threshold):
 
     sd = np.zeros(src.shape)        # [h, w, c]
     for i in range(img_h):
-        if i == img_h // 2:
-            print("  process: 50%...")
+        if i * 10 % img_h == 0:
+            print("  process: {0}%...".format(i * 10 // img_h * 10))
+        # if i == img_h // 2:
+        #     print("  process: 50%...")
         y = i + win_half_h
         for j in range(img_w):
             x = j + win_half_w
