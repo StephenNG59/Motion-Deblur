@@ -8,7 +8,7 @@ import time
 from vars import *
 
 
-get_smooth = False
+get_smooth = True
 smooth_npy = "./img/smooth.npy"
 
 if __name__ == '__main__':
