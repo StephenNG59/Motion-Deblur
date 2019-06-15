@@ -22,9 +22,15 @@ if __name__ == '__main__':
     t1 = time.time()
     if get_smooth:
         smooth_mask = find_smooth_region(observed_image, kernel.shape, smooth_threshold)
-        np.save(smooth_npy, smooth_mask)
+        cv.imshow('res', smooth_mask)
+        cv.waitKey(0)
+        cv.destroyAllWindows()
+        # np.save(smooth_npy, smooth_mask)
+        # smooth_mask_saved = cv.merge((smooth_mask, smooth_mask, smooth_mask))
     else:
-        smooth_mask = np.load(smooth_npy)
+        # smooth_mask = np.load(smooth_npy)
+        smooth_mask = cv.imread('img/smooth_mask/mask.png')
+        # smooth_mask = smooth_mask_saved[:, :, 0]
     mask_01 = smooth_mask / 255.0
     print("- 1.finished time {0}".format(time.time() - t1))
     plt.subplot(111); plt.imshow(smooth_mask[:, :, 0], cmap='gray'); plt.show()

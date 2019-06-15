@@ -1,5 +1,6 @@
 smooth_threshold = 5
-file_path = "./img/input/test_blur.jpg"
+# file_path = "./img/input/test_blur.jpg"
+file_path = "./img/man.png"
 # file_path = "./img/man-s.png"
 # file_path = "./img/test_blur.jpg"
 mask_path = "./img/mask-m.bmp"

@@ -62,6 +62,7 @@ def find_smooth_region(img, ker_shape, threshold):
     # cv.imshow('res', smooth_mask)
     # cv.waitKey(0)
     # cv.destroyAllWindows()
+    cv.imwrite('img/smooth_mask/mask.png', smooth_mask)
     return smooth_mask
 
 
@@ -69,7 +70,7 @@ if __name__ == '__main__':
     """
         for function testing
     """
-    img1 = cv.imread('./img/man.png')
+    img1 = cv.imread('./img/1.png')
 
     # kernel_w1 = int(input('请输入卷积核的宽度'))  # 宽度和高度必须都为奇数
     # kernel_h1 = int(input('请输入卷积核的高度'))
@@ -81,7 +82,9 @@ if __name__ == '__main__':
     cv.waitKey(0)
     cv.destroyAllWindows()
 
+    time1 = time.time()
     find_smooth_region(img1, (5, 5), 5)
+    print("- 1.finished time {0}".format(time.time() - time1))
 
     # print(img1)
 
