@@ -2,6 +2,7 @@ import numpy as np
 from energy import get_cof
 from image import get_partial
 from vars import *
+import cv2 as cv
 
 
 def update_psi(Psi, Mask, Observed_image, Latent_image, gamma=Gamma, lambda1=Lambda1, lambda2=Lambda2):
@@ -31,7 +32,7 @@ def update_psi(Psi, Mask, Observed_image, Latent_image, gamma=Gamma, lambda1=Lam
         for j in range(width):
             for k in range(n_channel):
                 psi_x, psi_y = Psi_x[i][j][k], Psi_y[i][j][k]
-                mask = Mask[i][j][0]
+                mask = Mask[i][j]
                 dx_obs, dx_lat = d_Observed[0][i][j][k], d_Latent[0][i][j][k]
                 dy_obs, dy_lat = d_Observed[1][i][j][k], d_Latent[1][i][j][k]
                 Psi_x[i][j][k] = update_single_psi(psi_x, mask, dx_obs, dx_lat, gamma, lambda1, lambda2)
@@ -85,14 +86,28 @@ def update_single_psi(psi, mask, d_observed, d_latent, gamma, lambda1, lambda2):
     # print("psi1:{1:.2f}, psi2:{2:.2f}, psi3:{3:.2f}, psi4:{4:.2f}, origin:{0:.3f}, updated:{5:.3f}".format(psi, psi1, psi2, psi3, -lt, psi_star))
     return psi_star
 
-
+"""
 def get_psi_diff(psi_updated, psi):
     psi_diff_x = psi_updated[0] - psi[0]
     psi_diff_y = psi_updated[0] - psi[0]
 
-    diff_r = max(np.linalg.norm(psi_diff_x[:, :, 0], ord=2), np.linalg.norm(psi_diff_y[:, :, 0], ord=2))
-    diff_g = max(np.linalg.norm(psi_diff_x[:, :, 1], ord=2), np.linalg.norm(psi_diff_y[:, :, 1], ord=2))
-    diff_b = max(np.linalg.norm(psi_diff_x[:, :, 2], ord=2), np.linalg.norm(psi_diff_y[:, :, 2], ord=2))
+    diff_r = max(np.linalg.norm(psi_diff_x[:, :, 0], ord=2), np.linalg.norm(psi_diff_y[:, :, 0], ord=1))
+    diff_g = max(np.linalg.norm(psi_diff_x[:, :, 1], ord=2), np.linalg.norm(psi_diff_y[:, :, 1], ord=1))
+    diff_b = max(np.linalg.norm(psi_diff_x[:, :, 2], ord=2), np.linalg.norm(psi_diff_y[:, :, 2], ord=1))
 
     diff = max(diff_r, diff_g, diff_b)
     return diff
+"""
+
+
+def get_psi_diff(psi_updated, psi):
+    psi_x, psi_y = psi
+    psi_u_x, psi_u_y = psi_updated
+    b1, g1, r1 = cv.split(psi_u_x)
+    b2, g2, r2 = cv.split(psi_x)
+    b_norm = np.linalg.norm(b1 - b2, ord=1)
+    g_norm = np.linalg.norm(g1 - g2, ord=1)
+    r_norm = np.linalg.norm(r1 - r2, ord=1)
+    # print("b_norm = ", b_norm)
+    print("b_norm = {1:.10f}".format(b_norm))
+    return max(b_norm, g_norm, r_norm)

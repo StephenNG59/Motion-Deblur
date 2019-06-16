@@ -25,7 +25,7 @@ def initial_kernel():
     # print(kernel)
 
     # kernel = np.identity(size[0])
-    kernel = np.rot90(kernel, 2)
+    # kernel = np.rot90(kernel, 2)
     print(kernel.shape)
     return kernel
 
@@ -38,8 +38,10 @@ def get_partial(image):
         par_x, par_y: ndarray of shape [height, width], partial in x, partial in y, in range (-255.0, 255.0)
     """
     im = image * 1.0                                # transform to float type, otherwise cannot use filter2D
-    dx = np.array([[-1., 1.]], dtype=np.float32)    # should use float32 dtype, otherwise cannot use filter2D
-    dy = np.array([[-1.], [1.]], dtype=np.float32)
+    # dx = np.array([[-1., 1.]], dtype=np.float32)    # should use float32 dtype, otherwise cannot use filter2D
+    # dy = np.array([[-1.], [1.]], dtype=np.float32)
+    dx = np.array([[0, 0, 0], [-0.5, 0, 0.5], [0, 0, 0]], np.float32)
+    dy = np.array([[0, -0.5, 0], [0, 0, 0], [0, 0.5, 0]], np.float32)
     par_x = cv.filter2D(im, -1, dx, borderType=cv.BORDER_REPLICATE)                 # here border type is reflect (101?)
     par_y = cv.filter2D(im, -1, dy, borderType=cv.BORDER_REPLICATE)
     # region (not suitable code)
@@ -92,7 +94,7 @@ def get_smooth_mask(src, window_size, threshold):
 
 def pad(img, pad_y, pad_x, rot=0):
     i = np.rot90(img, rot)
-    i = cv.copyMakeBorder(i, 0, pad_y, 0, pad_x, cv.BORDER_CONSTANT)
+    i = cv.copyMakeBorder(i, 0, pad_y, 0, pad_x, cv.BORDER_REPLICATE)
     return i
 
 

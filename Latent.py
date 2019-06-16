@@ -8,12 +8,19 @@ from image import pad, fft
 class Latent:
 
     d0 = np.array([[0, 0, 0], [0, 1, 0], [0, 0, 0]], np.float32)
-    dx = np.array([[0, 0, 0], [-1, 1, 0], [0, 0, 0]], np.float32)
-    dy = np.array([[0, -1, 0], [0, 1, 0], [0, 0, 0]], np.float32)
-    dxx = np.array([[0, 0, 0], [1, -2, 1], [0, 0, 0]], np.float32)
-    dyy = np.array([[0, 1, 0], [0, -2, 0], [0, 1, 0]], np.float32)
-    dxy = np.array([[1, -1, 0], [-1, 1, 0], [0, 0, 0]], np.float32)
-    der_length = d0.shape[0]
+    dx = np.array([[0, 0, 0], [-0.5, 0, 0.5], [0, 0, 0]], np.float32)
+    dy = np.array([[0, -0.5, 0], [0, 0, 0], [0, 0.5, 0]], np.float32)
+    dxx = np.zeros((5, 5))
+    dxx[2][2] = -0.5
+    dxx[2][0] = 0.25
+    dxx[2][4] = 0.25
+    dyy = np.zeros((5, 5))
+    dxx[2][2] = -0.5
+    dxx[0][2] = 0.25
+    dxx[4][2] = 0.25
+    dxy = np.array([[-0.25, 0, 0.25], [0, 0, 0], [0.25, 0, -0.25]], np.float32)
+    der_length1 = d0.shape[0]
+    der_length2 = dxx.shape[0]
 
     def __init__(self, observed_image, kernel_size, base=50):
         self.img = self.latent = observed_image
@@ -22,15 +29,17 @@ class Latent:
         self.ker_y, self.ker_x = kernel_size
         self.pad_y, self.pad_x = self.img_y + self.ker_y - 1, self.img_x + self.ker_x - 1
 
-        d_pad_bottom = self.pad_y - self.der_length
-        d_pad_right = self.pad_x - self.der_length
-        
-        self.f_d0_pad = fft(pad(self.d0, d_pad_bottom, d_pad_right, 2))
-        self.f_dx_pad = fft(pad(self.dx, d_pad_bottom, d_pad_right, 2))
-        self.f_dy_pad = fft(pad(self.dy, d_pad_bottom, d_pad_right, 2))
-        self.f_dxx_pad = fft(pad(self.dxx, d_pad_bottom, d_pad_right, 2))
-        self.f_dyy_pad = fft(pad(self.dyy, d_pad_bottom, d_pad_right, 2))
-        self.f_dxy_pad = fft(pad(self.dxy, d_pad_bottom, d_pad_right, 2))
+        d_pad_bottom1 = self.pad_y - self.der_length1
+        d_pad_right1 = self.pad_x - self.der_length1
+        d_pad_bottom2 = self.pad_y - self.der_length2
+        d_pad_right2 = self.pad_x - self.der_length2
+
+        self.f_d0_pad = fft(pad(self.d0, d_pad_bottom1, d_pad_right1, 2))
+        self.f_dx_pad = fft(pad(self.dx, d_pad_bottom1, d_pad_right1, 2))
+        self.f_dy_pad = fft(pad(self.dy, d_pad_bottom1, d_pad_right1, 2))
+        self.f_dxx_pad = fft(pad(self.dxx, d_pad_bottom2, d_pad_right2, 2))
+        self.f_dyy_pad = fft(pad(self.dyy, d_pad_bottom2, d_pad_right2, 2))
+        self.f_dxy_pad = fft(pad(self.dxy, d_pad_bottom1, d_pad_right1, 2))
 
         self.Delta = base * (1 * (np.conjugate(self.f_d0_pad) * self.f_d0_pad) +
                              0.5 * (np.conjugate(self.f_dx_pad) * self.f_dx_pad +
@@ -88,7 +97,7 @@ class Latent:
         f_psi_y_pad = fft(pad(psi_y, self.ker_y - 1, self.ker_x - 1))
 
         # fft of padded kernel
-        f_kernel_pad = fft(pad(kernel, self.img_y - 1, self.img_x - 1, rot=2))
+        f_kernel_pad = fft(pad(kernel, self.img_y - 1, self.img_x - 1))
 
         # fft of padded img
         f_img_pad = fft(pad(img, self.ker_y - 1, self.ker_x - 1))
@@ -107,10 +116,11 @@ class Latent:
         # plt.subplot(122); plt.imshow(np.real(l_channel_updated[:self.img_y, :self.img_x]), cmap='gray');
         plt.show()
 
+        # print(observed_image_channel.shape)
+        # print(l_channel_updated.shape)
+        # print(self.ker_x//2)
+        # return np.real(l_channel_updated[self.ker_y//2:self.img_y+self.ker_y//2, self.ker_x//2:self.img_x+self.ker_x//2])
         return np.real(l_channel_updated[:self.img_y, :self.img_x])
 
-
 if __name__ == '__main__':
-
-
-
+    pass

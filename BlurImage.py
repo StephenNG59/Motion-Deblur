@@ -27,6 +27,7 @@ y, x, _ = img.shape
 # img_pad = cv.copyMakeBorder(img, pad, pad, pad, pad, cv.BORDER_CONSTANT, value=0)
 r, g, b = cv.split(img)
 
+kernel = np.rot90(kernel, 2)
 r = cv.filter2D(r, -1, kernel, borderType=cv.BORDER_REPLICATE)
 g = cv.filter2D(g, -1, kernel, borderType=cv.BORDER_REPLICATE)
 b = cv.filter2D(b, -1, kernel, borderType=cv.BORDER_REPLICATE)
