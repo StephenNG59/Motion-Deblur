@@ -17,6 +17,12 @@ if __name__ == '__main__':
 
     observed_image = load_image(file_path)
     kernel = initial_kernel()
+    shape = observed_image.shape
+    shape_x, shape_y, _ = shape
+    x1 = shape_x // 2 - 40
+    x2 = shape_x // 2 + 40
+    y1 = shape_y // 2 - 40
+    y2 = shape_y // 2 + 40
 
     # get smooth region mask
     print("1. Getting smooth region...")
@@ -74,10 +80,10 @@ if __name__ == '__main__':
         # flag1 = False    # for testing
         # --------------------- update f ------------------------
         f = updated_f
-        updated_f = update_f(latent.latent, observed_image, updated_f)
-        f_diff = f_diff(updated_f, f)
-        print("f_diff = {0:.5f}".format(f_diff))
-        if f_diff < f_threshold:
+        updated_f = update_f(latent.latent[x1:x2, y1:y2], observed_image[x1:x2, y1:y2], updated_f)
+        f_diff_val = f_diff(updated_f, f)
+        print("f_diff = {0:.5f}".format(f_diff_val))
+        if f_diff_val < f_threshold:
             flag1 = False
         # f = updated_f
 

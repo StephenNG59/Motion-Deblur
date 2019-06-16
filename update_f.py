@@ -54,6 +54,10 @@ def update_f(latent1, image1, f):
 
     updated_f = solve_qp(P, q, G, h, np.zeros((q.size, q.size)), np.zeros(q.size))
     updated_f = updated_f.reshape(f.shape)
+    print(updated_f)
+    cv.imwrite('img/kernel/kernel.png', updated_f * 255)
+    updated_f = updated_f / np.sum(updated_f)
+    cv.imwrite('img/kernel/kernel1.png', updated_f * 255)
 
     return updated_f
 

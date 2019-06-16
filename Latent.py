@@ -108,3 +108,9 @@ class Latent:
         plt.show()
 
         return np.real(l_channel_updated[:self.img_y, :self.img_x])
+
+
+if __name__ == '__main__':
+
+
+

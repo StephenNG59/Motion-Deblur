@@ -10,7 +10,7 @@ Lambda1 = 0.002
 Lambda2 = 10
 
 # LatentThreshold = 1e-5
-LatentThreshold = 100
+LatentThreshold = 100000
 # PsiThreshold = 1e-5
-PsiThreshold = 100
+PsiThreshold = 100000
 f_threshold = 1e-3
