@@ -45,19 +45,27 @@ def update_f(latent1, image1, f):
     q = 1-2 * np.dot(B.T, A)
     q = q.flatten()
 
-    G1 = np.identity(q.size)
-    h1 = np.ones(q.size)
+    # G1 = np.identity(q.size)
+    # h1 = np.ones(q.size)
     G2 = -1 * np.identity(q.size)
     h2 = np.zeros(q.size)
-    G = np.concatenate((G1, G2))
-    h = np.concatenate((h1, h2))
+    # G = np.concatenate((G1, G2))
+    # h = np.concatenate((h1, h2))
+    G = G2
+    h = h2
 
     updated_f = solve_qp(P, q, G, h, np.zeros((q.size, q.size)), np.zeros(q.size))
     updated_f = updated_f.reshape(f.shape)
-    print(updated_f)
+    max_f = updated_f.max()
+    rows, cols = updated_f.shape
+    for i in range(rows):
+        for j in range(cols):
+            if updated_f[i][j] < max_f * 0.3:
+                updated_f[i][j] = 0
     cv.imwrite('img/kernel/kernel.png', updated_f * 255)
     updated_f = updated_f / np.sum(updated_f)
-    cv.imwrite('img/kernel/kernel1.png', updated_f * 255)
+
+    cv.imwrite('img/kernel/kernel_norm.png', updated_f * 255)
 
     return updated_f
 

@@ -11,7 +11,7 @@ from find_smooth_region import *
 
 
 get_smooth = False
-operating_f = False
+operating_f = True
 smooth_npy = "./img/smooth.npy"
 
 if __name__ == '__main__':
@@ -52,9 +52,10 @@ if __name__ == '__main__':
 
     iter_1 = 0
     flag1 = True
-    # updated_f = np.eye(27, 27)
-    # updated_f /= np.sum(updated_f)
-    updated_f = kernel
+    updated_f = np.eye(27, 27)
+    updated_f /= np.sum(updated_f)
+    # print(updated_f)
+    # updated_f = kernel
     while flag1:
         iter_1 = iter_1 + 1
         iter_2 = 0
@@ -65,7 +66,7 @@ if __name__ == '__main__':
             psi_updated = update_psi(psi, mask_01, observed_image, latent.latent, Gamma, Lambda1, Lambda2)
             # print(psi_updated)
             # psi_updated = (psi_updated[0] * 1.05, psi_updated[1] * 1.05)  # for test
-            #psi_diff = get_psi_diff(psi_updated, psi_origin)
+            # psi_diff = get_psi_diff(psi_updated, psi_origin)
             psi_diff = 0
             latent_diff = latent.update_l(updated_f, psi_updated)
             print("latent_diff = {0:.5f}, psi_diff = {1:.10f}".format(latent_diff, psi_diff))

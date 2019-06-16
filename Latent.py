@@ -28,7 +28,8 @@ class Latent:
 
         self.img_y, self.img_x, _ = observed_image.shape
         self.ker_y, self.ker_x = kernel_size
-        self.pad_y, self.pad_x = self.img_y + self.ker_y - 1, self.img_x + self.ker_x - 1
+        # self.pad_y, self.pad_x = self.img_y + self.ker_y - 1, self.img_x + self.ker_x - 1
+        self.pad_y, self.pad_x = self.img_y, self.img_x
 
         d_pad_bottom1 = self.pad_y - self.der_length1
         d_pad_right1 = self.pad_x - self.der_length1
@@ -59,6 +60,7 @@ class Latent:
 
         observed_b, observed_g, observed_r = cv.split(self.img)
 
+        print(kernel)
         l_updated_b = self.update_l_channel(observed_b, kernel, (psi[0][:, :, 2], psi[1][:, :, 2])) / 255.0
         l_updated_g = self.update_l_channel(observed_g, kernel, (psi[0][:, :, 1], psi[1][:, :, 1])) / 255.0
         l_updated_r = self.update_l_channel(observed_r, kernel, (psi[0][:, :, 0], psi[1][:, :, 0])) / 255.0
@@ -68,6 +70,27 @@ class Latent:
         plt.subplot(111); plt.title("Latent updated")
         plt.imshow(np.dstack([l_updated_r, l_updated_g, l_updated_b])); plt.show()
 
+        # l_updated[self.img_y // 2 - 12, self.img_x // 2 - 10] = [255, 255, 255]
+        # print(self.img_y // 2 - 12, self.img_x // 2 - 10)
+        # cv.imwrite('img/latent/l.jpg', l_updated * 255)
+        # cv.imshow('l_updated', l_updated)
+        # cv.waitKey(0)
+        # cv.destroyAllWindows()
+
+        la = l_updated.copy()
+        p1 = la[0:255, 0:391]
+        p2 = la[0:255, 391:799]
+        p3 = la[255:531, 0:391]
+        p4 = la[255:531, 391:799]
+        l_updated[0:276, 0:408] = p4
+        l_updated[0:276, 408:799] = p3
+        l_updated[276:531, 0:408] = p2
+        l_updated[276:531, 408:799] = p1
+        # l_updated[276, 408] = [255, 255, 255]
+        # cv.imshow('l_updated', l_updated)
+        # cv.waitKey(0)
+        # cv.destroyAllWindows()
+
         l_diff = l_updated - self.latent
         diff_b = np.linalg.norm(l_diff[:, :, 0], ord=1)
         diff_g = np.linalg.norm(l_diff[:, :, 1], ord=1)
@@ -75,12 +98,6 @@ class Latent:
         diff = max(diff_r, diff_g, diff_b)
 
         self.latent = l_updated
-        # l_updated[]
-        cv.imwrite('img/latent/l.jpg', l_updated)
-        cv.imshow('l_updated', l_updated)
-        cv.waitKey(0)
-        cv.destroyAllWindows()
-
 
         return diff
 
@@ -94,20 +111,24 @@ class Latent:
         """
         if kernel.shape != (self.ker_x, self.ker_y):
             self.ker_x, self.ker_y = kernel.shape
-            self.pad_x, self.pad_y = self.img_x + self.ker_x - 1, self.img_y + self.ker_y - 1
+            # self.pad_x, self.pad_y = self.img_x + self.ker_x - 1, self.img_y + self.ker_y - 1
+            self.pad_x, self.pad_y = self.img_x, self.img_y
 
         img = observed_image_channel
 
         # fft of padded psi
         psi_x, psi_y = psi
-        f_psi_x_pad = fft(pad(psi_x, self.ker_y - 1, self.ker_x - 1))
-        f_psi_y_pad = fft(pad(psi_y, self.ker_y - 1, self.ker_x - 1))
+        # f_psi_x_pad = fft(pad(psi_x, self.ker_y - 1, self.ker_x - 1))
+        f_psi_x_pad = fft(psi_x)
+        # f_psi_y_pad = fft(pad(psi_y, self.ker_y - 1, self.ker_x - 1))
+        f_psi_y_pad = fft(psi_y)
 
         # fft of padded kernel
-        f_kernel_pad = fft(pad(kernel, self.img_y - 1, self.img_x - 1))
+        f_kernel_pad = fft(pad(kernel, self.pad_y - self.ker_y, self.pad_x - self.ker_x))
 
         # fft of padded img
-        f_img_pad = fft(pad(img, self.ker_y - 1, self.ker_x - 1))
+        # f_img_pad = fft(pad(img, self.ker_y - 1, self.ker_x - 1))
+        f_img_pad = fft(img)
 
         # plt.subplot(121); plt.imshow(img, cmap='gray');
         l_channel_updated = ifftshift(ifft2(

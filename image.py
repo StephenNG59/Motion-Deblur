@@ -27,7 +27,7 @@ def initial_kernel():
 
     # kernel = np.identity(size[0])
     # kernel = np.rot90(kernel, 2)
-    print(kernel.shape)
+    # print(kernel.shape)
     return kernel
 
 
