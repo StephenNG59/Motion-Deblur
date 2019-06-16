@@ -3,8 +3,8 @@ import cv2 as cv
 from image import *
 
 
-file_path = "./img/input/test.png"
-out_path = "./img/input/test_blur.jpg"
+file_path = "./img/nbt/man_clear.png"
+out_path = "./img/nbt/man_blur.png"
 
 # kernel = np.array([[0, 0, 1, 0, 0], [0, 1, 2, 1, 0], [1, 2, 4, 2, 1], [0, 1, 2, 1, 0], [0, 0, 1, 0, 0]], np.float32)
 

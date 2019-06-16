@@ -3,13 +3,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from image import *
 from update_psi import *
+from update_f import *
 from Latent import *
 import time
 from vars import *
 from find_smooth_region import *
 
 
-get_smooth = True
+get_smooth = False
 smooth_npy = "./img/smooth.npy"
 
 if __name__ == '__main__':
@@ -22,6 +23,7 @@ if __name__ == '__main__':
     t1 = time.time()
     if get_smooth:
         smooth_mask = find_smooth_region(observed_image, kernel.shape, smooth_threshold)
+        print("111111")
         cv.imshow('res', smooth_mask)
         cv.waitKey(0)
         cv.destroyAllWindows()
@@ -43,6 +45,8 @@ if __name__ == '__main__':
 
     iter_1 = 0
     flag1 = True
+    updated_f = np.eye(27, 27)
+    updated_f /= np.sum(updated_f)
     while flag1:
         iter_1 = iter_1 + 1
         iter_2 = 0
@@ -53,7 +57,7 @@ if __name__ == '__main__':
             psi_updated = update_psi(psi, mask_01, observed_image, latent.latent, Gamma, Lambda1, Lambda2)
             # psi_updated = (psi_updated[0] * 1.05, psi_updated[1] * 1.05)  # for test
             psi_diff = get_psi_diff(psi_updated, psi_origin)
-            latent_diff = latent.update_l(kernel, psi_updated)
+            latent_diff = latent.update_l(updated_f, psi_updated)
             print("latent_diff = {0:.5f}, psi_diff = {1:.10f}".format(latent_diff, psi_diff))
             if latent_diff < LatentThreshold and psi_diff < PsiThreshold:
                 flag2 = False
@@ -66,13 +70,17 @@ if __name__ == '__main__':
                             para = 1
                         elif para < 0:
                             para = 0
-        flag1 = False    # for test
-        # update f
-        # updated_f = update_f()
-        # if f_diff(updated_f, f) < f_threshold or iters >= iters_max:
-            # flag1 = False
+
+        # flag1 = False    # for testing
+        # --------------------- update f ------------------------
+        f = updated_f
+        updated_f = update_f(latent.latent, observed_image, updated_f)
+        f_diff = f_diff(updated_f, f)
+        print("f_diff = {0:.5f}".format(f_diff))
+        if f_diff < f_threshold:
+            flag1 = False
         # f = updated_f
+
     lat = 255 * latent.latent
     cv.imwrite("./img/out/out.jpg", lat)
-
-
+    cv.imwrite('img/kernel/kernel.png', updated_f * 255)
