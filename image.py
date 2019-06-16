@@ -1,5 +1,6 @@
 import numpy as np
 import cv2 as cv
+from scipy.fftpack import fft2
 
 
 def load_image(file_path):
@@ -99,7 +100,8 @@ def pad(img, pad_y, pad_x, rot=0):
 
 
 def fft(img):
-    return np.fft.fft2(img)
+    # return np.fft.fft2(img)
+    return fft2(img)
 
 
 def f_diff(f_updated, f):

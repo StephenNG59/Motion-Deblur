@@ -3,6 +3,7 @@ import cv2 as cv
 import matplotlib.pyplot as plt
 from vars import *
 from image import pad, fft
+from scipy.fftpack import ifft2, ifftshift
 
 
 class Latent:
@@ -68,12 +69,18 @@ class Latent:
         plt.imshow(np.dstack([l_updated_r, l_updated_g, l_updated_b])); plt.show()
 
         l_diff = l_updated - self.latent
-        diff_b = np.linalg.norm(l_diff[:, :, 0], ord=2)
-        diff_g = np.linalg.norm(l_diff[:, :, 1], ord=2)
-        diff_r = np.linalg.norm(l_diff[:, :, 2], ord=2)
+        diff_b = np.linalg.norm(l_diff[:, :, 0], ord=1)
+        diff_g = np.linalg.norm(l_diff[:, :, 1], ord=1)
+        diff_r = np.linalg.norm(l_diff[:, :, 2], ord=1)
         diff = max(diff_r, diff_g, diff_b)
 
         self.latent = l_updated
+        # l_updated[]
+        cv.imwrite('img/latent/l.jpg', l_updated)
+        cv.imshow('l_updated', l_updated)
+        cv.waitKey(0)
+        cv.destroyAllWindows()
+
 
         return diff
 
@@ -103,7 +110,7 @@ class Latent:
         f_img_pad = fft(pad(img, self.ker_y - 1, self.ker_x - 1))
 
         # plt.subplot(121); plt.imshow(img, cmap='gray');
-        l_channel_updated = np.fft.ifft2(
+        l_channel_updated = ifftshift(ifft2(
             (np.conjugate(f_kernel_pad) * f_img_pad * self.Delta
              + Gamma * np.conjugate(self.f_dx_pad) * f_psi_x_pad
              + Gamma * np.conjugate(self.f_dy_pad) * f_psi_y_pad
@@ -112,15 +119,18 @@ class Latent:
              np.conjugate(f_kernel_pad) * f_kernel_pad * self.Delta
              + Gamma * np.conjugate(self.f_dx_pad) * self.f_dx_pad
              + Gamma * np.conjugate(self.f_dy_pad) * self.f_dy_pad
-             ))
+             )))
         # plt.subplot(122); plt.imshow(np.real(l_channel_updated[:self.img_y, :self.img_x]), cmap='gray');
         plt.show()
 
         # print(observed_image_channel.shape)
         # print(l_channel_updated.shape)
         # print(self.ker_x//2)
-        # return np.real(l_channel_updated[self.ker_y//2:self.img_y+self.ker_y//2, self.ker_x//2:self.img_x+self.ker_x//2])
-        return np.real(l_channel_updated[:self.img_y, :self.img_x])
+        # return np.real(l_channel_updated[self.ker_y//2:self.img_y+self.ker_y//2,
+        # self.ker_x//2:self.img_x+self.ker_x//2])
+        # return np.real(l_channel_updated[:self.img_y, :self.img_x])
+        return np.real(l_channel_updated)
+
 
 if __name__ == '__main__':
     pass
