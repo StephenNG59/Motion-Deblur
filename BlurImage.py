@@ -3,8 +3,8 @@ import cv2 as cv
 from image import *
 
 
-file_path = "./img/nbt/man_clear.png"
-out_path = "./img/nbt/man_blur.png"
+file_path = "./img/res/1/mb2.png"
+out_path = "./img/res/mb2_177_2.png"
 
 # kernel = np.array([[0, 0, 1, 0, 0], [0, 1, 2, 1, 0], [1, 2, 4, 2, 1], [0, 1, 2, 1, 0], [0, 0, 1, 0, 0]], np.float32)
 
@@ -17,7 +17,10 @@ out_path = "./img/nbt/man_blur.png"
 # # kernel[k_h//2][k_w//2] = 0.1
 # x = 11; kernel = np.ones((x, x), np.float32); kernel[x//2][x//2] = 1.0
 # kernel = np.arange(x * x).reshape((x, x))
-kernel = initial_kernel()
+# kernel = initial_kernel()
+kernel = np.zeros((17, 17))
+kernel[8][8] = 4
+kernel[0][0] = 1
 pad = kernel.shape[0] // 2
 kernel = kernel / np.sum(kernel)
 

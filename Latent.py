@@ -72,7 +72,7 @@ class Latent:
 
         # l_updated[self.img_y // 2 - 12, self.img_x // 2 - 10] = [255, 255, 255]
         # print(self.img_y // 2 - 12, self.img_x // 2 - 10)
-        # cv.imwrite('img/latent/l.jpg', l_updated * 255)
+        cv.imwrite('img/latent/l.jpg', l_updated * 255)
         # cv.imshow('l_updated', l_updated)
         # cv.waitKey(0)
         # cv.destroyAllWindows()
@@ -90,6 +90,7 @@ class Latent:
         # cv.imshow('l_updated', l_updated)
         # cv.waitKey(0)
         # cv.destroyAllWindows()
+        cv.imwrite('img/latent/l1.jpg', l_updated * 255)
 
         l_diff = l_updated - self.latent
         diff_b = np.linalg.norm(l_diff[:, :, 0], ord=1)
@@ -135,8 +136,7 @@ class Latent:
             (np.conjugate(f_kernel_pad) * f_img_pad * self.Delta
              + Gamma * np.conjugate(self.f_dx_pad) * f_psi_x_pad
              + Gamma * np.conjugate(self.f_dy_pad) * f_psi_y_pad
-             ) /
-            (
+             ) / (
              np.conjugate(f_kernel_pad) * f_kernel_pad * self.Delta
              + Gamma * np.conjugate(self.f_dx_pad) * self.f_dx_pad
              + Gamma * np.conjugate(self.f_dy_pad) * self.f_dy_pad
