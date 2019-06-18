@@ -28,7 +28,7 @@ class Latent:
 
         self.img_y, self.img_x, _ = observed_image.shape
         self.ker_y, self.ker_x = kernel_size
-        self.pad_y, self.pad_x = self.img_y + self.ker_y - 1, self.img_x + self.ker_x - 1
+        self.pad_y, self.pad_x = self.img_y, self.img_x
 
         d_pad_bottom1 = self.pad_y - self.der_length1
         d_pad_right1 = self.pad_x - self.der_length1
@@ -76,7 +76,7 @@ class Latent:
 
         self.latent = l_updated
         # l_updated[]
-        cv.imwrite('img/latent/l.jpg', l_updated)
+        cv.imwrite('img/latent/l.jpg', 255 * l_updated)
         cv.imshow('l_updated', l_updated)
         cv.waitKey(0)
         cv.destroyAllWindows()
@@ -100,17 +100,23 @@ class Latent:
 
         # fft of padded psi
         psi_x, psi_y = psi
-        f_psi_x_pad = fft(pad(psi_x, self.ker_y - 1, self.ker_x - 1))
-        f_psi_y_pad = fft(pad(psi_y, self.ker_y - 1, self.ker_x - 1))
+        f_psi_x_pad = fft(pad(psi_x, 0, 0))
+        f_psi_y_pad = fft(pad(psi_y, 0, 0))
 
         # fft of padded kernel
-        f_kernel_pad = fft(pad(kernel, self.img_y - 1, self.img_x - 1))
+        f_kernel_pad = fft(pad(kernel, self.img_y - self.ker_y, self.img_x - self.ker_x))
 
         # fft of padded img
-        f_img_pad = fft(pad(img, self.ker_y - 1, self.ker_x - 1))
+        f_img_pad = fft(img)
 
         # plt.subplot(121); plt.imshow(img, cmap='gray');
-        l_channel_updated = ifftshift(ifft2(
+
+        shift_kernel = np.zeros((self.img_y, self.img_x))
+        shift_kernel[13][13] = 1
+        print(shift_kernel.shape)
+
+        l_channel_updated = ifft2(
+            fft(shift_kernel) *
             (np.conjugate(f_kernel_pad) * f_img_pad * self.Delta
              + Gamma * np.conjugate(self.f_dx_pad) * f_psi_x_pad
              + Gamma * np.conjugate(self.f_dy_pad) * f_psi_y_pad
@@ -119,7 +125,7 @@ class Latent:
              np.conjugate(f_kernel_pad) * f_kernel_pad * self.Delta
              + Gamma * np.conjugate(self.f_dx_pad) * self.f_dx_pad
              + Gamma * np.conjugate(self.f_dy_pad) * self.f_dy_pad
-             )))
+             ))
         # plt.subplot(122); plt.imshow(np.real(l_channel_updated[:self.img_y, :self.img_x]), cmap='gray');
         plt.show()
 

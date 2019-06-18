@@ -16,12 +16,12 @@ def initial_kernel():
     # kernel = np.arange(x * x).reshape((x, x))
     # kernel = np.ones((3, 3))
 
-    # kernel = np.ones((5, 5), dtype=float)
+    kernel = np.eye(27, 27, dtype=float)
     # kernel = kernel / np.sum(kernel)
 
-    kernel1 = cv.imread('img/nbt/kernel.png', 0)
-    kernel = kernel1 * 1.0
-    kernel /= np.sum(kernel)
+    # kernel1 = cv.imread('img/nbt/kernel.png', 0)
+    # kernel = kernel1 * 1.0
+    # kernel /= np.sum(kernel)
     # print(np.sum(kernel))
     # print(kernel)
 

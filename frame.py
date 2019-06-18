@@ -52,8 +52,8 @@ if __name__ == '__main__':
 
     iter_1 = 0
     flag1 = True
-    # updated_f = np.eye(27, 27)
-    # updated_f /= np.sum(updated_f)
+    updated_f = np.eye(27, 27)
+    updated_f /= np.sum(updated_f)
     updated_f = kernel
     while flag1:
         iter_1 = iter_1 + 1
