@@ -17,6 +17,7 @@ smooth_npy = "./img/smooth.npy"
 if __name__ == '__main__':
 
     observed_image = load_image(file_path)
+    # observed_image = observed_image[0:532, 0:798]
     kernel = initial_kernel()
     shape = observed_image.shape
     shape_x, shape_y, _ = shape
@@ -53,15 +54,18 @@ if __name__ == '__main__':
     iter_1 = 0
     flag1 = True
     updated_f = np.eye(27, 27)
+
     updated_f /= np.sum(updated_f)
     updated_f = kernel
     while flag1:
         iter_1 = iter_1 + 1
         iter_2 = 0
         flag2 = True
+        Gamma = 2
         while flag2:
             iter_2 = iter_2 + 1
             psi_origin = psi
+            print(Gamma)
             psi_updated = update_psi(psi, mask_01, observed_image, latent.latent, Gamma, Lambda1, Lambda2)
             # print(psi_updated)
             # psi_updated = (psi_updated[0] * 1.05, psi_updated[1] * 1.05)  # for test
@@ -73,8 +77,12 @@ if __name__ == '__main__':
                 flag2 = False
             psi = psi_updated
             psi_x, psi_y = psi
+            Gamma *= 2
             cv.imwrite('img/dx/dx_psi.png', psi_x * 255)
             cv.imwrite('img/dx/dy_psi.png', psi_y * 255)
+            latent_x, latent_y = get_partial(latent.latent)
+            cv.imwrite('img/dx/dx_lat.png', latent_x * 255)
+            cv.imwrite('img/dx/dy_lat.png', latent_y * 255)
             cv.imwrite("./img/out/out-" + str(iter_2) + ".jpg", latent.latent * 255)
             for tmp1 in latent.latent:
                 for tmp2 in tmp1:

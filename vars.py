@@ -5,7 +5,7 @@ file_path = "./img/nbt/man.png"
 # file_path = "./img/test_blur.jpg"
 mask_path = "./img/mask-m.bmp"
 
-Gamma = 1
+Gamma = 2
 Lambda1 = 0.002
 Lambda2 = 10
 

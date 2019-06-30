@@ -3,7 +3,7 @@ import cv2 as cv
 import matplotlib.pyplot as plt
 from vars import *
 from image import pad, fft
-from scipy.fftpack import ifft2, ifftshift
+from scipy.fftpack import ifft2, ifftshift, fftshift
 
 
 class Latent:
@@ -112,8 +112,12 @@ class Latent:
         # plt.subplot(121); plt.imshow(img, cmap='gray');
 
         shift_kernel = np.zeros((self.img_y, self.img_x))
-        shift_kernel[13][13] = 1
+        shift_kernel[self.ker_y//2][self.ker_x//2] = 1
         print(shift_kernel.shape)
+
+        # print(Gamma * np.conjugate(self.f_dx_pad) * f_psi_x_pad)
+        # print("-----------------    ")
+        # print(Gamma * np.conjugate(self.f_dx_pad) * self.f_dx_pad)
 
         l_channel_updated = ifft2(
             fft(shift_kernel) *
@@ -126,6 +130,7 @@ class Latent:
              + Gamma * np.conjugate(self.f_dx_pad) * self.f_dx_pad
              + Gamma * np.conjugate(self.f_dy_pad) * self.f_dy_pad
              ))
+
         # plt.subplot(122); plt.imshow(np.real(l_channel_updated[:self.img_y, :self.img_x]), cmap='gray');
         plt.show()
 

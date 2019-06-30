@@ -31,17 +31,17 @@ def update_psi(Psi, Mask, Observed_image, Latent_image, gamma=Gamma, lambda1=Lam
             print("Updating psi - progress {}%".format(i // h * 10))
         for j in range(width):
             for k in range(n_channel):
-                psi_x, psi_y = Psi_x[i][j][k], Psi_y[i][j][k]
+                # psi_x, psi_y = Psi_x[i][j][k], Psi_y[i][j][k]
                 mask = Mask[i][j]
                 dx_obs, dx_lat = d_Observed[0][i][j][k], d_Latent[0][i][j][k]
                 dy_obs, dy_lat = d_Observed[1][i][j][k], d_Latent[1][i][j][k]
-                Psi_x[i][j][k] = update_single_psi(psi_x, mask, dx_obs, dx_lat, gamma, lambda1, lambda2)
-                Psi_y[i][j][k] = update_single_psi(psi_y, mask, dy_obs, dy_lat, gamma, lambda1, lambda2)
+                Psi_x[i][j][k] = update_single_psi(mask, dx_obs, dx_lat, gamma, lambda1, lambda2)
+                Psi_y[i][j][k] = update_single_psi(mask, dy_obs, dy_lat, gamma, lambda1, lambda2)
 
     return Psi_x, Psi_y
 
 
-def update_single_psi(psi, mask, d_observed, d_latent, gamma, lambda1, lambda2):
+def update_single_psi(mask, d_observed, d_latent, gamma, lambda1, lambda2):
     k, a, b, lt = get_cof()
 
     # [-lt, 0]

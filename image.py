@@ -1,6 +1,6 @@
 import numpy as np
 import cv2 as cv
-from scipy.fftpack import fft2
+from scipy.fftpack import fft2, fftshift
 
 
 def load_image(file_path):
@@ -16,18 +16,22 @@ def initial_kernel():
     # kernel = np.arange(x * x).reshape((x, x))
     # kernel = np.ones((3, 3))
 
-    kernel = np.eye(27, 27, dtype=float)
-    # kernel = kernel / np.sum(kernel)
-
-    # kernel1 = cv.imread('img/nbt/kernel.png', 0)
+    # kernel1 = np.eye(27, 27)
     # kernel = kernel1 * 1.0
-    # kernel /= np.sum(kernel)
+    # kernel[0][0] = 0
+    # kernel[26][26] = 0
+    # kernel = kernel / np.sum(kernel)
+    # print(kernel)
+
+    kernel1 = cv.imread('img/nbt/kernel.png', 0)
+    kernel = kernel1 * 1.0
+    kernel /= np.sum(kernel)
     # print(np.sum(kernel))
     # print(kernel)
 
     # kernel = np.identity(size[0])
     # kernel = np.rot90(kernel, 2)
-    print(kernel.shape)
+    # print(kernel.shape)
     return kernel
 
 
@@ -101,7 +105,7 @@ def pad(img, pad_y, pad_x, rot=0):
 
 def fft(img):
     # return np.fft.fft2(img)
-    return fft2(img)
+    return fftshift(fft2(img))
 
 
 def f_diff(f_updated, f):
